@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>北京退休金测算 - 2025新规版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .input-field {
+            background: #f1f5f9;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            background: #ffffff;
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 5px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #2563eb;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* 移动端点击效果 */
+        .active-scale:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-10">
+
+    <!-- 顶部状态栏装饰 -->
+    <div class="gradient-bg h-48 w-full absolute top-0 z-0"></div>
+
+    <div class="relative z-10 max-w-md mx-auto px-4 pt-10">
+        <!-- 标题区 -->
+        <div class="text-center text-white mb-8">
+            <h1 class="text-3xl font-black tracking-tight">北京退休金测算</h1>
+            <p class="text-blue-100 text-sm mt-2 opacity-90 font-medium">依据 2025 最新计发基数及延迟政策</p>
+        </div>
+
+        <!-- 主表单 -->
+        <div class="glass-card p-6 md:p-8 space-y-6">
+            
+            <!-- 当前年龄 -->
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-slate-600 flex items-center">
+                    <span class="mr-2">📅</span>当前年龄 (周岁)
+                </label>
+                <input type="number" id="currentAge" placeholder="例如: 35" 
+                    class="input-field w-full rounded-2xl px-5 py-3.5 font-bold text-slate-800">
+            </div>
+
+            <!-- 性别身份 -->
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-slate-600 flex items-center">
+                    <span class="mr-2">👤</span>身份类别
+                </label>
+                <select id="identity" class="input-field w-full rounded-2xl px-5 py-3.5 font-bold text-slate-800 appearance-none bg-no-repeat bg-[right_1.25rem_center] bg-[length:1rem]">
+                    <option value="male">男职工 / 干部</option>
+                    <option value="female_staff">女职工 (原50岁退休)</option>
+                    <option value="female_cadre">女干部 / 灵活女性 (原55岁退休)</option>
+                </select>
+            </div>
+
+            <!-- 个人账户 -->
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-slate-600 flex items-center justify-between">
+                    <span><span class="mr-2">💰</span>个人账户余额 (元)</span>
+                    <span class="text-[10px] text-blue-500 font-normal">京通小程序可查</span>
+                </label>
+                <input type="number" id="accountBalance" placeholder="输入当前社保账户余额" 
+                    class="input-field w-full rounded-2xl px-5 py-3.5 font-bold text-slate-800">
+            </div>
+
+            <!-- 缴费指数 -->
+            <div class="space-y-4 pt-2">
+                <div class="flex justify-between items-center">
+                    <label class="text-sm font-bold text-slate-600">平均缴费指数</label>
+                    <span id="indexVal" class="text-blue-600 font-black bg-blue-50 px-3 py-1 rounded-full text-sm">1.0</span>
+                </div>
+                <input type="range" id="indexRange" min="0.6" max="3" step="0.1" value="1.0" class="w-full">
+                <div class="flex justify-between text-[10px] font-bold text-slate-400">
+                    <span>0.6 (最低)</span>
+                    <span>3.0 (封顶)</span>
+                </div>
+            </div>
+
+            <!-- 累计年限 -->
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-slate-600 flex items-center">
+                    <span class="mr-2">⏳</span>累计缴费年限
+                </label>
+                <input type="number" id="totalYears" placeholder="预估退休时累计年数" 
+                    class="input-field w-full rounded-2xl px-5 py-3.5 font-bold text-slate-800">
+            </div>
+
+            <!-- 测算结果 -->
+            <div class="bg-blue-600 rounded-[2rem] p-8 text-white shadow-xl shadow-blue-200 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500 rounded-full opacity-20"></div>
+                
+                <p class="text-center text-blue-100 text-xs font-bold uppercase tracking-widest opacity-80">预估首月领取</p>
+                <div class="flex items-center justify-center mt-3">
+                    <span class="text-2xl font-bold opacity-80 mr-1">¥</span>
+                    <span id="totalRes" class="text-5xl font-black">0</span>
+                </div>
+
+                <div class="mt-8 space-y-4 border-t border-blue-400/50 pt-6">
+                    <div class="flex justify-between text-sm">
+                        <span class="opacity-80">基础养老金</span>
+                        <span id="baseRes" class="font-bold">¥ 0</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="opacity-80">个人账户金</span>
+                        <span id="personalRes" class="font-bold">¥ 0</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-white/10 px-4 py-3 rounded-2xl mt-4">
+                        <span class="text-xs opacity-90">预测退休年龄</span>
+                        <span id="retireAge" class="font-black text-xl">-- 岁</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 按钮 -->
+            <button id="copyLink" class="active-scale w-full py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-100 transition-all flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                分享工具给好友
+            </button>
+
+            <!-- 底部说明 -->
+            <div class="text-[10px] text-slate-400 text-center leading-relaxed">
+                * 计算基数采用北京2025年计发基数 ¥12,049<br>
+                * 退休年龄根据渐进式延迟退休政策模拟，结果仅供参考
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-3 rounded-full text-sm opacity-0 transition-opacity pointer-events-none z-50">
+        复制成功，快去分享吧！
+    </div>
+
+    <script>
+        const BEIJING_BASE = 12049;
+
+        function calculate() {
+            const age = parseInt(document.getElementById('currentAge').value);
+            const balance = parseFloat(document.getElementById('accountBalance').value);
+            const index = parseFloat(document.getElementById('indexRange').value);
+            const years = parseInt(document.getElementById('totalYears').value);
+            const identity = document.getElementById('identity').value;
+
+            document.getElementById('indexVal').innerText = index.toFixed(1);
+
+            if (!age || !balance || !years) return;
+
+            // 基础配置
+            let baseRetireAge = 60;
+            let divisor = 139;
+            if (identity === 'female_staff') { baseRetireAge = 50; divisor = 195; }
+            else if (identity === 'female_cadre') { baseRetireAge = 55; divisor = 170; }
+
+            // 延迟退休算法 (模拟)
+            const currentYear = new Date().getFullYear();
+            const birthYear = currentYear - age;
+            const originalRetireYear = birthYear + baseRetireAge;
+            
+            let delayedAge = baseRetireAge;
+            let currentDivisor = divisor;
+
+            if (originalRetireYear >= 2025) {
+                const yearsPost2025 = originalRetireYear - 2025;
+                const delayMonths = Math.min(36, Math.floor((yearsPost2025 * 12 + 1) / 4)); 
+                delayedAge = baseRetireAge + (delayMonths / 12);
+                if (delayedAge > baseRetireAge) {
+                    currentDivisor = divisor - ((delayedAge - baseRetireAge) * 8); 
+                }
+            }
+
+            // 计算核心公式
+            const basePart = BEIJING_BASE * (1 + index) / 2 * years * 0.01;
+            const personalPart = balance / currentDivisor;
+            const total = basePart + personalPart;
+
+            // 更新UI
+            document.getElementById('totalRes').innerText = Math.round(total).toLocaleString();
+            document.getElementById('baseRes').innerText = '¥ ' + basePart.toLocaleString(undefined, {maximumFractionDigits: 2});
+            document.getElementById('personalRes').innerText = '¥ ' + personalPart.toLocaleString(undefined, {maximumFractionDigits: 2});
+            document.getElementById('retireAge').innerText = delayedAge.toFixed(1) + ' 岁';
+        }
+
+        // 绑定事件
+        const inputs = ['currentAge', 'accountBalance', 'indexRange', 'totalYears', 'identity'];
+        inputs.forEach(id => document.getElementById(id).addEventListener('input', calculate));
+
+        // 分享逻辑
+        document.getElementById('copyLink').onclick = function() {
+            const el = document.createElement('textarea');
+            el.value = window.location.href;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const toast = document.getElementById('toast');
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+        };
+    </script>
+</body>
+</html>
