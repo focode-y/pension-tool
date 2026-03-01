@@ -59,6 +59,23 @@
             color: #f8fafc;
             border-radius: 20px;
         }
+
+        /* 新增：文章链接样式 */
+        .article-card {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .article-card:active {
+            transform: scale(0.98);
+            background: #f1f5f9;
+        }
     </style>
 </head>
 <body class="pb-20">
@@ -170,8 +187,33 @@
                 </div>
             </div>
 
+            <!-- 文章链接区域 -->
+            <div class="mt-8 space-y-3">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center mb-4">💡 深度阅读 · 政策详解</p>
+                
+                <a href="http://xhslink.com/o/7hJ6WeTQKts" target="_blank" class="article-card">
+                    <span class="text-red-500 mr-3">
+                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M4 4.85v.9h1v-.9H4Zm7 0v.9h1v-.9h-1Zm-7 1.8v.9h1v-.9H4Zm7 0v.9h1v-.9h-1Zm-7 1.8v.9h1v-.9H4Zm7 0v.9h1v-.9h-1ZM5 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H5Z"/><path d="M2.5 0A2.5 2.5 0 0 0 0 2.5v11A2.5 2.5 0 0 0 2.5 16h11a2.5 2.5 0 0 0 2.5-2.5v-11A2.5 2.5 0 0 0 13.5 0h-11ZM1 2.5A1.5 1.5 0 0 1 2.5 1h11A1.5 1.5 0 0 1 15 2.5v11a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 13.5v-11Z"/></svg>
+                    </span>
+                    <span class="text-xs font-bold text-slate-700 flex-grow">永住回国后，日本年金还能领取吗？</span>
+                    <span class="text-slate-300">
+                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+                    </span>
+                </a>
+
+                <a href="http://xhslink.com/o/9ANdq7YhQwq" target="_blank" class="article-card">
+                    <span class="text-red-500 mr-3">
+                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M4 4.85v.9h1v-.9H4Zm7 0v.9h1v-.9h-1Zm-7 1.8v.9h1v-.9H4Zm7 0v.9h1v-.9h-1Zm-7 1.8v.9h1v-.9H4Zm7 0v.9h1v-.9h-1ZM5 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H5Z"/><path d="M2.5 0A2.5 2.5 0 0 0 0 2.5v11A2.5 2.5 0 0 0 2.5 16h11a2.5 2.5 0 0 0 2.5-2.5v-11A2.5 2.5 0 0 0 13.5 0h-11ZM1 2.5A1.5 1.5 0 0 1 2.5 1h11A1.5 1.5 0 0 1 15 2.5v11a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 13.5v-11Z"/></svg>
+                    </span>
+                    <span class="text-xs font-bold text-slate-700 flex-grow">离开日本，已交的年金能退多少钱？</span>
+                    <span class="text-slate-300">
+                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+                    </span>
+                </a>
+            </div>
+
             <p class="mt-8 text-[10px] text-slate-400 text-center leading-relaxed">
-                本工具为模拟试算，不代表官方承诺。中国算法包含2025新政延迟退休逻辑。<br>
+                本工具为模拟试算，不代表官方承诺。<br>中国算法包含2025新政延迟退休逻辑。<br>
                 日本算法按厚生劳动省标准模型换算为月度数据。
             </p>
         </div>
@@ -262,7 +304,6 @@
             
             document.getElementById('index-display').innerText = idx.toFixed(1);
 
-            // 延迟退休逻辑 (2025新政)
             let originalRetire = CN_DATA.types.find(t => t.id === type).retire;
             let delayMonths = 0;
             const birthYear = new Date().getFullYear() - age;
@@ -272,7 +313,6 @@
             }
             const finalRetire = originalRetire + (delayMonths / 12);
 
-            // 分母
             let divisor = 139;
             if (finalRetire <= 50) divisor = 195;
             else if (finalRetire <= 55) divisor = 170;
@@ -290,14 +330,11 @@
             const years = parseInt(document.getElementById('years').value) || 0;
             const type = document.getElementById('person-type').value;
 
-            // 1. 老齢基礎年金 (月度 = 约 81.6万 / 12)
             const p1_year = 816000 * (Math.min(years, 40) / 40);
             const p1_month = p1_year / 12;
             
-            // 2. 老齢厚生年金 (月度)
             let p2_month = 0;
             if (type === 'jp_standard') {
-                // 公式估算: 平均年收 * 0.005481 * 缴费月数
                 const p2_year = (avgIncome * 10000) * 0.005481 * (years * 12) / 12; 
                 p2_month = p2_year / 12;
             }
