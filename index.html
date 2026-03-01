@@ -3,257 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>全国退休金测算 - 2025各省精准版</title>
+    <title>跨国养老金专业测算</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+SC:wght@400;700;900&display=swap');
         
-        body {
-            font-family: 'Noto Sans SC', sans-serif;
+        body { 
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
             background-color: #f1f5f9;
             color: #1e293b;
         }
 
-        .city-selector {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        .gradient-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding-bottom: 140px;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 2rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        .tab-button {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .input-field {
+        .tab-active {
+            color: white !important;
+            background: #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .main-container {
+            margin-top: -120px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .info-box {
             background: #f8fafc;
-            border: 1.5px solid #e2e8f0;
-            transition: all 0.3s ease;
+            border-left: 4px solid #3b82f6;
+            padding: 10px 12px;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.75rem;
+            color: #475569;
         }
 
-        .input-field:focus {
-            background: #ffffff;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-            outline: none;
-        }
-
-        .result-panel {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 5px;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
+        .slider-custom::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 22px;
             height: 22px;
-            background: #3b82f6;
+            background: #2563eb;
+            border: 3px solid #ffffff;
             border-radius: 50%;
-            border: 4px solid #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        .result-panel {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            color: #f8fafc;
+            border-radius: 20px;
         }
     </style>
 </head>
-<body class="min-h-screen pb-10">
+<body class="pb-20">
 
-    <!-- 装饰区 -->
-    <div class="bg-slate-900 h-64 w-full absolute top-0 z-0">
-        <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+    <!-- 顶部导航 -->
+    <div class="gradient-header pt-10 px-6 text-center">
+        <h1 class="text-white text-2xl font-black mb-6">养老金测算助手</h1>
+        
+        <div class="inline-flex p-1 bg-slate-800/50 rounded-2xl backdrop-blur-md border border-white/10">
+            <button onclick="switchCountry('CN')" id="tab-cn" class="tab-button tab-active px-10 py-3 rounded-xl text-sm font-bold flex items-center gap-2 text-slate-400">
+                🇨🇳 中国
+            </button>
+            <button onclick="switchCountry('JP')" id="tab-jp" class="tab-button px-10 py-3 rounded-xl text-sm font-bold flex items-center gap-2 text-slate-400">
+                🇯🇵 日本
+            </button>
+        </div>
     </div>
 
-    <div class="relative z-10 max-w-md mx-auto px-4 pt-8">
-        <!-- 标题与省份切换 -->
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-black text-white">全国退休金测算</h1>
-            <div class="mt-4 inline-flex items-center city-selector px-4 py-2 rounded-full text-white">
-                <span class="mr-2 text-sm">📍 测算地区：</span>
-                <select id="provinceSelect" class="bg-transparent font-bold outline-none text-blue-200">
-                    <!-- 选项由 JS 填充 -->
+    <div class="max-w-[500px] mx-auto px-4">
+        <div class="main-container bg-white p-6">
+            
+            <!-- 地区选择 -->
+            <div id="region-section" class="mb-6">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">缴纳/居住地区</label>
+                <select id="region-select" onchange="calculate()" class="w-full bg-slate-100 border-none rounded-xl px-4 py-4 font-bold text-slate-800 focus:ring-2 focus:ring-blue-500">
                 </select>
             </div>
-            <p class="text-slate-400 text-[10px] mt-2 italic">当地计发基数：<span id="baseShow">--</span> 元 (2025测算用)</p>
-        </div>
 
-        <div class="glass-card p-6 space-y-5">
-            <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-500">当前年龄</label>
-                    <input type="number" id="currentAge" value="35" class="input-field w-full rounded-xl px-4 py-3 font-bold">
+            <!-- 基本信息 -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">当前年龄</label>
+                    <input type="number" id="age" value="30" oninput="calculate()" class="w-full bg-slate-100 border-none rounded-xl px-4 py-4 font-bold text-slate-800">
                 </div>
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-500">身份类别</label>
-                    <select id="identity" class="input-field w-full rounded-xl px-2 py-3 font-bold text-sm">
-                        <option value="male">男职工</option>
-                        <option value="female_staff">女职工(50岁)</option>
-                        <option value="female_cadre">女干部(55岁)</option>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">参保类型</label>
+                    <select id="person-type" onchange="calculate()" class="w-full bg-slate-100 border-none rounded-xl px-4 py-4 font-bold text-slate-800">
                     </select>
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-500">个人账户余额 (元)</label>
-                <input type="number" id="accountBalance" value="50000" class="input-field w-full rounded-xl px-4 py-3 font-bold">
-            </div>
-
-            <div class="space-y-3">
-                <div class="flex justify-between items-center">
-                    <label class="text-xs font-bold text-slate-500">平均缴费指数</label>
-                    <span id="indexVal" class="text-blue-600 font-black text-sm">1.0</span>
+            <!-- 核心输入区 -->
+            <div class="space-y-6 mb-8">
+                <!-- 账户余额/收入 -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label id="income-label" class="text-xs font-bold text-slate-500 uppercase">账户累计余额 (CNY)</label>
+                        <span id="income-unit" class="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded">累计额</span>
+                    </div>
+                    <input type="number" id="income-value" value="120000" oninput="calculate()" class="w-full bg-slate-100 border-none rounded-xl px-4 py-4 font-bold text-slate-800 focus:ring-2 focus:ring-blue-500 mb-3">
+                    
+                    <div id="cn-help-box" class="info-box">
+                        <strong>🔍 如何查询：</strong> 打开“支付宝/微信-社保服务”或“掌上12333”APP，查看“养老保险个人权益单”中的<b>个人账户累计储存额</b>。
+                    </div>
                 </div>
-                <input type="range" id="indexRange" min="0.6" max="3" step="0.1" value="1.0" class="w-full">
-            </div>
 
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-500">预计总缴费年限</label>
-                <input type="number" id="totalYears" value="20" class="input-field w-full rounded-xl px-4 py-3 font-bold">
+                <!-- 指数说明 -->
+                <div id="index-section">
+                    <div class="flex justify-between items-end mb-3">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase">平均缴费工资指数</label>
+                            <p class="text-[10px] text-slate-400">1.0 代表按社平工资缴费</p>
+                        </div>
+                        <span id="index-display" class="text-blue-600 font-black text-xl">1.0</span>
+                    </div>
+                    <input type="range" id="index-slider" min="0.6" max="3.0" step="0.1" value="1.0" oninput="calculate()" class="w-full h-2 bg-slate-200 rounded-lg appearance-none slider-custom">
+                    <div class="flex justify-between text-[10px] text-slate-400 mt-2 font-bold uppercase">
+                        <span>最低(0.6)</span>
+                        <span>平均(1.0)</span>
+                        <span>最高(3.0)</span>
+                    </div>
+                </div>
+
+                <!-- 缴费年限 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">预计总缴费年限</label>
+                    <div class="flex items-center gap-3">
+                        <input type="number" id="years" value="35" oninput="calculate()" class="w-full bg-slate-100 border-none rounded-xl px-4 py-4 font-bold text-slate-800">
+                        <span class="text-slate-400 font-bold">Years</span>
+                    </div>
+                </div>
             </div>
 
             <!-- 结果 -->
-            <div class="result-panel rounded-3xl p-6 text-white shadow-xl shadow-blue-100">
-                <div class="text-center">
-                    <p class="text-blue-100 text-[10px] font-bold tracking-widest uppercase">预计退休月领额</p>
-                    <div class="flex items-center justify-center mt-2">
-                        <span class="text-xl font-bold opacity-70 mr-1">¥</span>
-                        <span id="totalRes" class="text-5xl font-black">0</span>
+            <div class="result-panel p-6">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <p class="text-slate-400 text-[11px] font-bold uppercase tracking-widest">预估每月领取 (预计)</p>
+                        <div class="flex items-baseline gap-1 mt-2">
+                            <span id="res-currency" class="text-xl font-bold text-blue-400">¥</span>
+                            <span id="res-total" class="text-4xl font-black tracking-tighter">0</span>
+                        </div>
+                    </div>
+                    <div class="bg-white/10 px-3 py-1.5 rounded-lg text-right">
+                        <p class="text-[9px] text-slate-500 uppercase font-bold">退休年龄</p>
+                        <p id="res-retire-age" class="text-sm font-black text-white">--</p>
                     </div>
                 </div>
 
-                <div class="mt-6 space-y-3 border-t border-white/10 pt-4 text-xs">
-                    <div class="flex justify-between">
-                        <span class="opacity-70">基础养老金</span>
-                        <span id="baseRes" class="font-bold">¥ 0</span>
+                <div class="space-y-4 pt-6 border-t border-white/10">
+                    <div class="flex justify-between items-center">
+                        <span id="sub-label-1" class="text-slate-400 text-xs font-bold">基础养老金/老龄基础</span>
+                        <span id="sub-val-1" class="text-white text-sm font-black">--</span>
                     </div>
-                    <div class="flex justify-between">
-                        <span class="opacity-70">个人账户金</span>
-                        <span id="personalRes" class="font-bold">¥ 0</span>
-                    </div>
-                    <div class="flex justify-between items-center bg-black/20 px-4 py-3 rounded-xl mt-4">
-                        <span class="font-medium">预计退休年龄</span>
-                        <span id="retireAge" class="font-black text-lg">-- 岁</span>
+                    <div class="flex justify-between items-center">
+                        <span id="sub-label-2" class="text-slate-400 text-xs font-bold">个人账户/厚生年金</span>
+                        <span id="sub-val-2" class="text-white text-sm font-black">--</span>
                     </div>
                 </div>
             </div>
 
-            <p class="text-[9px] text-slate-400 text-center leading-relaxed">
-                * 计发基数采用当地 2024/2025 官方或预测值。广东、深圳分开计发。<br>
-                * 退休年龄依据《关于实施渐进式延迟法定退休年龄的决定》进行逻辑模拟。
+            <p class="mt-8 text-[10px] text-slate-400 text-center leading-relaxed">
+                本工具为模拟试算，不代表官方承诺。中国算法包含2025新政延迟退休逻辑。<br>
+                日本算法按厚生劳动省标准模型换算为月度数据。
             </p>
         </div>
     </div>
 
     <script>
-        // 全国各地区 2024/2025 养老金计发基数参考 (单位:元)
-        const REGION_DATA = [
-            { name: "北京", base: 12049 },
-            { name: "上海", base: 12307 },
-            { name: "深圳", base: 11500 },
-            { name: "天津", base: 9680 },
-            { name: "广东", base: 9200 },
-            { name: "江苏", base: 8613 },
-            { name: "浙江", base: 8350 },
-            { name: "福建", base: 8100 },
-            { name: "山东", base: 7650 },
-            { name: "四川", base: 7820 },
-            { name: "重庆", base: 8000 },
-            { name: "湖北", base: 7200 },
-            { name: "湖南", base: 7132 },
-            { name: "安徽", base: 7467 },
-            { name: "河北", base: 7241 },
-            { name: "河南", base: 6701 },
-            { name: "江西", base: 7100 },
-            { name: "陕西", base: 7800 },
-            { name: "山西", base: 6900 },
-            { name: "黑龙江", base: 6430 },
-            { name: "吉林", base: 6600 },
-            { name: "辽宁", base: 7100 },
-            { name: "云南", base: 7600 },
-            { name: "贵州", base: 7300 },
-            { name: "广西", base: 6800 },
-            { name: "海南", base: 8200 },
-            { name: "内蒙古", base: 7700 },
-            { name: "甘肃", base: 7200 },
-            { name: "宁夏", base: 7900 },
-            { name: "青海", base: 8700 },
-            { name: "新疆", base: 7800 },
-            { name: "西藏", base: 11000 }
-        ];
+        let currentCountry = 'CN';
 
-        const select = document.getElementById('provinceSelect');
-        
-        // 填充选项并默认北京
-        REGION_DATA.forEach(p => {
-            const opt = document.createElement('option');
-            opt.value = p.base;
-            opt.innerText = p.name;
-            if (p.name === "北京") opt.selected = true;
-            select.appendChild(opt);
-        });
+        const CN_DATA = {
+            regions: [
+                { name: '北京', base: 12049 },
+                { name: '上海', base: 12183 },
+                { name: '广东', base: 9420 },
+                { name: '浙江', base: 8210 },
+                { name: '江苏', base: 8613 },
+                { name: '山东', base: 7450 },
+                { name: '全国平均', base: 7500 }
+            ],
+            types: [
+                { id: 'male', name: '男职工', retire: 60 },
+                { id: 'female_c', name: '女干部', retire: 55 },
+                { id: 'female_w', name: '女工人', retire: 50 }
+            ]
+        };
 
-        function calculate() {
-            const currentBase = parseFloat(select.value);
-            document.getElementById('baseShow').innerText = currentBase.toLocaleString();
+        const JP_DATA = {
+            regions: [
+                { name: '日本全境 (统一标准)', base: 0 }
+            ],
+            types: [
+                { id: 'jp_standard', name: '厚生年金 (企业员工)', retire: 65 },
+                { id: 'jp_basic', name: '国民年金 (自营业)', retire: 65 }
+            ]
+        };
 
-            const age = parseInt(document.getElementById('currentAge').value);
-            const balance = parseFloat(document.getElementById('accountBalance').value);
-            const years = parseInt(document.getElementById('totalYears').value);
-            const index = parseFloat(document.getElementById('indexRange').value);
-            const identity = document.getElementById('identity').value;
-
-            document.getElementById('indexVal').innerText = index.toFixed(1);
-
-            if (isNaN(age) || isNaN(balance) || isNaN(years)) return;
-
-            // 基础退休年龄
-            let baseRetireAge = 60;
-            let divisor = 139;
-            if (identity === 'female_staff') { baseRetireAge = 50; divisor = 195; }
-            else if (identity === 'female_cadre') { baseRetireAge = 55; divisor = 170; }
-
-            const currentYear = new Date().getFullYear();
-            const birthYear = currentYear - age;
-            const originalRetireYear = birthYear + baseRetireAge;
+        function switchCountry(code) {
+            currentCountry = code;
             
-            let delayedAge = baseRetireAge;
-            let currentDivisor = divisor;
+            document.getElementById('tab-cn').classList.toggle('tab-active', code === 'CN');
+            document.getElementById('tab-jp').classList.toggle('tab-active', code === 'JP');
+            
+            const regionSelect = document.getElementById('region-select');
+            const personSelect = document.getElementById('person-type');
+            const indexSection = document.getElementById('index-section');
+            const incomeLabel = document.getElementById('income-label');
+            const incomeValue = document.getElementById('income-value');
+            const helpBox = document.getElementById('cn-help-box');
+            const resCurrency = document.getElementById('res-currency');
 
-            // 延迟退休逻辑 (2025年1月1日起，每4个月延迟1个月)
-            if (originalRetireYear >= 2025) {
-                const totalMonthsSince2025 = (originalRetireYear - 2025) * 12;
-                const delayMonths = Math.min(36, Math.ceil(totalMonthsSince2025 / 4));
-                delayedAge = baseRetireAge + (delayMonths / 12);
+            if (code === 'CN') {
+                indexSection.style.display = 'block';
+                helpBox.style.display = 'block';
+                incomeLabel.innerText = '账户累计余额 (CNY)';
+                incomeValue.value = 150000;
+                resCurrency.innerText = '¥';
                 
-                // 计发月数根据年龄增加而减小 (约每岁减 8-9)
-                if (delayedAge > baseRetireAge) {
-                    currentDivisor = divisor - ((delayedAge - baseRetireAge) * 8.5);
-                }
+                regionSelect.innerHTML = CN_DATA.regions.map(r => `<option value="${r.base}">${r.name} (基数: ${r.base})</option>`).join('');
+                personSelect.innerHTML = CN_DATA.types.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+            } else {
+                indexSection.style.display = 'none';
+                helpBox.style.display = 'none';
+                incomeLabel.innerText = '预计平均年收入 (万JPY)';
+                incomeValue.value = 500;
+                resCurrency.innerText = '円';
+
+                regionSelect.innerHTML = JP_DATA.regions.map(r => `<option value="${r.base}">${r.name}</option>`).join('');
+                personSelect.innerHTML = JP_DATA.types.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
             }
-
-            // 1. 基础养老金 = 当地计发基数 * (1 + 缴费指数) / 2 * 缴费年限 * 1%
-            const basePart = currentBase * (1 + index) / 2 * years * 0.01;
             
-            // 2. 个人账户金 = 余额 / 计发月数
-            const personalPart = balance / currentDivisor;
-            
-            const total = basePart + personalPart;
-
-            document.getElementById('totalRes').innerText = Math.round(total).toLocaleString();
-            document.getElementById('baseRes').innerText = '¥ ' + basePart.toFixed(2);
-            document.getElementById('personalRes').innerText = '¥ ' + personalPart.toFixed(2);
-            document.getElementById('retireAge').innerText = delayedAge.toFixed(1) + ' 岁';
+            calculate();
         }
 
-        const inputs = ['currentAge', 'accountBalance', 'indexRange', 'totalYears', 'identity', 'provinceSelect'];
-        inputs.forEach(id => document.getElementById(id).addEventListener('input', calculate));
+        function calculate() {
+            if (currentCountry === 'CN') {
+                calcChina();
+            } else {
+                calcJapan();
+            }
+        }
 
-        // 页面加载完成后立即执行一次
-        window.onload = calculate;
+        function calcChina() {
+            const base = parseFloat(document.getElementById('region-select').value);
+            const age = parseInt(document.getElementById('age').value) || 0;
+            const type = document.getElementById('person-type').value;
+            const balance = parseFloat(document.getElementById('income-value').value) || 0;
+            const years = parseInt(document.getElementById('years').value) || 0;
+            const idx = parseFloat(document.getElementById('index-slider').value);
+            
+            document.getElementById('index-display').innerText = idx.toFixed(1);
+
+            // 延迟退休逻辑 (2025新政)
+            let originalRetire = CN_DATA.types.find(t => t.id === type).retire;
+            let delayMonths = 0;
+            const birthYear = new Date().getFullYear() - age;
+            if (birthYear + originalRetire >= 2025) {
+                const step = (type === 'female_w') ? 2 : 3;
+                delayMonths = Math.min(Math.ceil(((birthYear + originalRetire - 2025) * 12) / step), 36);
+            }
+            const finalRetire = originalRetire + (delayMonths / 12);
+
+            // 分母
+            let divisor = 139;
+            if (finalRetire <= 50) divisor = 195;
+            else if (finalRetire <= 55) divisor = 170;
+            else if (finalRetire >= 60) divisor = 139 - (finalRetire - 60) * 7; 
+
+            const p1 = (base + base * idx) / 2 * years * 0.01;
+            const p2 = balance / divisor;
+            const total = p1 + p2;
+
+            updateUI(total, p1, p2, finalRetire.toFixed(1), "基础养老金", "个人账户金", "¥");
+        }
+
+        function calcJapan() {
+            const avgIncome = parseFloat(document.getElementById('income-value').value) || 0;
+            const years = parseInt(document.getElementById('years').value) || 0;
+            const type = document.getElementById('person-type').value;
+
+            // 1. 老齢基礎年金 (月度 = 约 81.6万 / 12)
+            const p1_year = 816000 * (Math.min(years, 40) / 40);
+            const p1_month = p1_year / 12;
+            
+            // 2. 老齢厚生年金 (月度)
+            let p2_month = 0;
+            if (type === 'jp_standard') {
+                // 公式估算: 平均年收 * 0.005481 * 缴费月数
+                const p2_year = (avgIncome * 10000) * 0.005481 * (years * 12) / 12; 
+                p2_month = p2_year / 12;
+            }
+
+            const total = p1_month + p2_month;
+            updateUI(total, p1_month, p2_month, "65 (满额)", "老齢基礎 (月)", "老齢厚生 (月)", "円");
+        }
+
+        function updateUI(total, s1, s2, retireAge, l1, l2, curr) {
+            document.getElementById('res-total').innerText = Math.round(total).toLocaleString();
+            document.getElementById('sub-label-1').innerText = l1;
+            document.getElementById('sub-label-2').innerText = l2;
+            document.getElementById('sub-val-1').innerText = curr + ' ' + Math.round(s1).toLocaleString();
+            document.getElementById('sub-val-2').innerText = curr + ' ' + Math.round(s2).toLocaleString();
+            document.getElementById('res-retire-age').innerText = retireAge + " 岁";
+        }
+
+        window.onload = () => switchCountry('CN');
     </script>
 </body>
 </html>
